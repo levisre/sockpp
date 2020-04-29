@@ -58,7 +58,8 @@ sys_error::sys_error(int err) : runtime_error(error_str(err)), errno_(err)
 std::string sys_error::error_str(int err)
 {
 	char buf[1024];
-	buf[0] = '\x0';
+	// Should use memset
+	memset(buf, 0, 1024);
 
 	#if defined(_WIN32)
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -67,7 +68,7 @@ std::string sys_error::error_str(int err)
     #else
     	#ifdef _GNU_SOURCE
 			auto s = strerror_r(err, buf, sizeof(buf));
-			return s ? std::string(s) : std::string();
+			//return s ? std::string(s) : std::string();
         #else
             ignore_result(strerror_r(err, buf, sizeof(buf)));
         #endif
